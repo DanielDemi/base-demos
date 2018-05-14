@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>数字时钟</title>
+</head>
+
+<body>
+    <canvas id="myCanvas" width="1000" height="225">
+        <p>您的浏览器不支持canvas</p>
+    </canvas>
+    <script>
+        // 时间对象存储
+        var timeList = {
+            0: [1, 1, 1, 0, 1, 1, 1],
+            1: [0, 0, 1, 0, 0, 0, 1],
+            2: [0, 1, 1, 1, 1, 1, 0],
+            3: [0, 1, 1, 1, 0, 1, 1],
+            4: [1, 0, 1, 1, 0, 0, 1],
+            5: [1, 1, 0, 1, 0, 1, 1],
+            6: [1, 1, 0, 1, 1, 1, 1],
+            7: [0, 1, 1, 0, 0, 0, 1],
+            8: [1, 1, 1, 1, 1, 1, 1],
+            9: [1, 1, 1, 1, 0, 1, 1]
+        }
+        var canvas = document.getElementById('myCanvas')
+        if (canvas.getContext) {
+            // 浏览器支持canvas
+            var ctx = canvas.getContext('2d');
+            var length = 100;
+            var distance = 0;
+            var r = 10;
+            timerStart(length, distance, r)
+            setInterval(function() {
+                ctx.clearRect(0,0,1000,1000);
+                timerStart(length, distance, r)
+            }, 1000)
+            
+        }
+        function timerStart(length, distance, r) {
+            createSp(ctx, 245, 70, 8);
+            createSp(ctx, 245, 150, 8);
+            createSp(ctx, 505, 70, 8);
+            createSp(ctx, 505, 150, 8);
+            var timerList = getCurrentTime();
+            timerList.forEach((item,index) => {
+                if (index <2) {
+                    distance = (length + 20)*index
+                    color = 'red';
+                } else if (index <4) {
+                    distance = (length + 20)*index + 20
+                    color = 'blue';
+                } else{
+                    distance = (length + 20)*index + 40
+                    color = '#FF1493'
+                }
+                createNum(ctx, item, distance, 0, length, r, color);
+            })
+        }
+        /**
+        * 制作一个横条
+        * ctx： 对象
+        * st_x， st_y: 开始位置坐标
+        * w， h: 长宽
+        * type: 'h', 'v'水平和垂直
+        * k: 位置系数
+        * startCloor,endColor开始和结束颜色，使用渐变色
+        **/
+        function creatLine(ctx, st_x, st_y, r, length, type, startCloor, endColor) {
+            ctx.beginPath();
+            if (type === 'h') {
+                var my_gradient = ctx.createLinearGradient(st_x, st_y, st_x, st_y + length);
+                my_gradient.addColorStop(0, startCloor);
+                my_gradient.addColorStop(0.5, endColor);
+                my_gradient.addColorStop(1, startCloor);
+                // 垂直
+                ctx.moveTo(st_x, st_y + r);
+                ctx.lineTo(st_x, st_y + length - r);
+                ctx.arc(st_x + r / 2, st_y + length - r, r / 2, Math.PI, 0, true);
+                ctx.lineTo(st_x + r, st_y + r);
+                ctx.arc(st_x + r / 2, st_y + r, r / 2, 0, Math.PI, true);
+                ctx.fillStyle = my_gradient;
+                ctx.fill();
+            } else {
+                var my_gradient = ctx.createLinearGradient(st_x, st_y, st_x + length, st_y);
+                my_gradient.addColorStop(0, startCloor);
+                my_gradient.addColorStop(0.5, endColor);
+                my_gradient.addColorStop(1, startCloor);
+                // 水平
+                ctx.moveTo(st_x + r, st_y);
+                ctx.lineTo(st_x + length - r, st_y);
+                ctx.arc(st_x + length - r, st_y + r / 2, r / 2, 1.5 * Math.PI, 0.5 * Math.PI, false);
+                ctx.lineTo(st_x + r, st_y + r);
+                ctx.arc(st_x + r, st_y + r / 2, r / 2, 0.5 * Math.PI, 1.5 * Math.PI, false);
+                ctx.fillStyle = my_gradient;
+                ctx.fill();
+            }
+        }
+        // 制作数字
+        function createNum(ctx, num, st_x, st_y, length, r, color) {
+            var numList = timeList[num];
+            numList.forEach((item, index) => {
+                if (item === 1) {
+                    var result = calcPosition(index + 1, st_x, st_y, length, r)
+                    creatLine(ctx, result.st_x, result.st_y, r, length, result.type, "white", color);
+                }
+            })
+        }
+        // 计算每个位置的起始点和水平垂直类型
+        function calcPosition(index, st_x, st_y, length) {
+            var newSt_x = st_x;
+            var newSt_y = st_y; 
+            var w;
+            var type = 'v';
+            var r = 5;
+            switch (index) {
+                case 1:
+                    newSt_x = st_x;
+                    newSt_y = st_y + r;
+                    type = 'h';
+                    break;
+                case 2:
+                    newSt_x = st_x + r;
+                    newSt_y = st_y;
+                    type = 'v'
+                    break;
+                case 3:
+                    newSt_x = st_x + length;
+                    newSt_y = st_y + r;
+                    type = 'h'
+                    break;
+                case 4:
+                    newSt_x = st_x + r;
+                    newSt_y = st_y + length;
+                    type = 'v'
+                    break;
+                case 5:
+                    newSt_x = st_x;
+                    newSt_y = st_y + length + r;
+                    type = 'h'
+                    break;
+                case 6:
+                    newSt_x = st_x + r;
+                    newSt_y = st_y + 2 * length;
+                    type = 'v'
+                    break;
+                case 7:
+                    newSt_x = st_x + length;
+                    newSt_y = st_y + length + r;
+                    type = 'h'
+                    break;
+                default:
+                    break;
+            }
+            return {
+                st_x: newSt_x,
+                st_y: newSt_y,
+                type
+            }
+        }
+        // 获取当前时间：时分秒数组
+        function getCurrentTime() {
+            var timer = new Date();
+            var hours = timer.getHours().toString().split('');
+            if (hours.length < 2) {
+                // 单数时补充0
+                hours.unshift('0');
+            }
+            var minutes = timer.getMinutes().toString().split('');
+            if (minutes.length < 2) {
+                minutes.unshift('0');
+            }
+            var seconds = timer.getSeconds().toString().split('');
+            if (seconds.length < 2) {
+                seconds.unshift('0');
+            }
+            return hours.concat(minutes, seconds)
+        }
+        // 制作冒号
+        function createSp(ctx, x, y, r) {
+            ctx.beginPath();
+            ctx.arc(x, y, r, 0, 2*Math.PI);
+            ctx.fillStyle = 'black';
+            ctx.fill();
+        }
+    </script>
+</body>
+
+</html>
