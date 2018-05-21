@@ -9,7 +9,7 @@
 </head>
 
 <body>
-    <canvas id="myCanvas" width="800" height="270" >
+    <canvas id="myCanvas" width="600" height="270" >
         <p>您的浏览器不支持canvas</p>
     </canvas>
     <script>
@@ -30,7 +30,7 @@
         if (canvas.getContext) {
             // 浏览器支持canvas
             var ctx = canvas.getContext('2d');
-            var length = 100;
+            var length = 80;
             var distance = 0;
             var r = 10;
             timerStart(length, distance, r)
