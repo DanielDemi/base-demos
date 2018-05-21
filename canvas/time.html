@@ -30,7 +30,7 @@
         if (canvas.getContext) {
             // 浏览器支持canvas
             var ctx = canvas.getContext('2d');
-            var length = 80;
+            var length = 75;
             var distance = 0;
             var r = 10;
             timerStart(length, distance, r)
@@ -41,10 +41,10 @@
             
         }
         function timerStart(length, distance, r) {
-            createSp(ctx, 245, 70, 8);
-            createSp(ctx, 245, 150, 8);
-            createSp(ctx, 505, 70, 8);
-            createSp(ctx, 505, 150, 8);
+            createSp(ctx, 195, 60, 8);
+            createSp(ctx, 195, 100, 8);
+            createSp(ctx, 405, 60, 8);
+            createSp(ctx, 405, 100, 8);
             var timerList = getCurrentTime();
             timerList.forEach((item,index) => {
                 if (index <2) {
